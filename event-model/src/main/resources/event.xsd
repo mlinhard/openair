@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://michal.linhard.sk/openair/event" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://michal.linhard.sk/openair/event" elementFormDefault="qualified">
+    <complexType name="tEvent">
+    	<sequence>
+    		<element name="program" type="tns:tProgram" maxOccurs="1"
+    			minOccurs="1">
+    		</element>
+    		<element name="metadata" type="tns:tMetadata" maxOccurs="1"
+    			minOccurs="0">
+    		</element>
+    	</sequence>
+    	<attribute name="uri" type="string" use="optional"></attribute>
+    	<attribute name="name" type="tns:tEntityName" use="required"></attribute>
+    	<attribute name="shortName" type="tns:tEntityName" use="optional"></attribute>
+    	<attribute name="version" type="tns:tVersionValue" use="optional"></attribute>
+    	<attribute name="versionTime" type="tns:tDateTime" use="optional"></attribute>
+    </complexType>
+
+    <element name="event" type="tns:tEvent"></element>
+
+    <simpleType name="tID">
+    	<annotation>
+    		<documentation>Metadata ID</documentation>
+    	</annotation>
+    	<restriction base="string">
+    		<pattern value="([A-Z]|[a-z])([A-Z]|[a-z]|\d)*"></pattern>
+    	</restriction>
+    </simpleType>
+
+    <complexType name="tProgram">
+    	<sequence>
+    		<element name="location" type="tns:tLocation" maxOccurs="unbounded" minOccurs="0"></element>
+    	</sequence>
+    </complexType>
+
+    <complexType name="tLocation">
+    	<sequence>
+    		<element name="day" type="tns:tDay" maxOccurs="unbounded"
+    			minOccurs="0">
+    		</element>
+    	</sequence>
+    	<attribute name="name" type="tns:tEntityName" use="required"></attribute>
+    	<attribute name="shortName" type="tns:tEntityName" use="optional"></attribute>
+    	<attribute name="id" type="tns:tID" use="optional"></attribute>
+    </complexType>
+
+    <complexType name="tDay">
+    	<sequence>
+    		<element name="session" type="tns:tSession" maxOccurs="unbounded" minOccurs="0"></element>
+    	</sequence>
+    	<attribute name="date" type="tns:tDate" use="required"></attribute>
+    </complexType>
+    
+    <complexType name="tSession">
+    	<attribute name="start" type="tns:tDateTime" use="required"></attribute>
+    	<attribute name="duration" type="tns:tDuration"
+    		use="required">
+    	</attribute>
+    	<attribute name="name" type="tns:tEntityName" use="required">
+    	</attribute>
+    	<attribute name="shortName" type="tns:tEntityName" use="optional"></attribute>
+    	<attribute name="id" type="tns:tID" use="optional"></attribute>
+    	<attribute name="oldVersion" type="boolean"
+    		use="optional" default="false">
+    	</attribute>
+    	<attribute name="cancelled" type="boolean" use="optional" default="false"></attribute>
+    </complexType>
+
+    <simpleType name="tEntityName">
+    	<restriction base="string">
+    		<minLength value="2"></minLength>
+    		<maxLength value="255"></maxLength>
+    	</restriction>
+    </simpleType>
+
+
+    <simpleType name="tChangeID">
+    	<restriction base="string">
+    		<pattern value="([A-Z]|[a-z])([A-Z]|[a-z]|\d)*"></pattern>
+    	</restriction>
+    </simpleType>
+
+    <complexType name="tMetadata">
+    	<sequence>
+    		<element name="event" type="tns:tEventMD" maxOccurs="unbounded" minOccurs="0"></element>
+    		<element name="location" type="tns:tLocationMD" maxOccurs="unbounded" minOccurs="0"></element>
+    		<element name="session" type="tns:tSessionMD" maxOccurs="unbounded" minOccurs="0"></element>
+    	</sequence>
+    </complexType>
+
+    <complexType name="tEventMD">
+    	<complexContent>
+    		<extension base="tns:tMDItem">
+    			<sequence>
+    				<element name="url" type="tns:tURL" maxOccurs="1" minOccurs="0"></element>
+    				<element name="description"
+    					type="tns:tDescription" maxOccurs="1" minOccurs="0">
+    				</element>
+    			</sequence>
+    		</extension>
+    	</complexContent>
+    </complexType>
+
+    <complexType name="tLocationMD">
+    	<complexContent>
+    		<extension base="tns:tMDItem">
+    			<sequence>
+    				<element name="url" type="tns:tURL" maxOccurs="1"
+    					minOccurs="0">
+    				</element>
+    				<element name="description"
+    					type="tns:tDescription" maxOccurs="1" minOccurs="0">
+    				</element>
+    			</sequence>
+    		</extension>
+    	</complexContent>
+    </complexType>
+
+    <complexType name="tSessionMD">
+    	<complexContent>
+    		<extension base="tns:tMDItem">
+    			<sequence>
+    				<element name="url" type="tns:tURL" maxOccurs="1"
+    					minOccurs="0">
+    				</element>
+    				<element name="description" type="tns:tDescription"
+    					maxOccurs="1" minOccurs="0">
+    				</element>
+
+    			</sequence>
+    		</extension>
+    	</complexContent>
+    </complexType>
+
+    <complexType name="tMDItem">
+    	<attribute name="id" type="tns:tID" use="optional"></attribute>
+    </complexType>
+
+
+
+    <simpleType name="tURL">
+    	<restriction base="string">
+    		<maxLength value="1000"></maxLength>
+    	</restriction>
+    </simpleType>
+
+    <simpleType name="tDescription">
+    	<restriction base="string">
+    		<maxLength value="2000"></maxLength>
+    	</restriction>
+    </simpleType>
+
+
+
+
+    <simpleType name="tVersionValue">
+    	<restriction base="long"></restriction>
+    </simpleType>
+
+
+    
+
+
+
+
+    
+    
+    
+    
+    
+
+
+
+
+    <simpleType name="tDuration">
+    	<restriction base="string">
+    		<pattern value="\d{1,4}:\d{1,2}"></pattern>
+    	</restriction>
+    </simpleType>
+
+    <simpleType name="tDateTime">
+    	<restriction base="string">
+    		<pattern value="\d\d-\d\d-\d\d\d\d \d\d?:\d\d"></pattern>
+    	</restriction>
+    </simpleType>
+
+    <simpleType name="tDate">
+    	<restriction base="string">
+    		<pattern value="\d\d-\d\d-\d\d\d\d"></pattern>
+    	</restriction>
+    </simpleType>
+    
+    
+        
+    
+
+
+
+
+
+
+
+</schema>

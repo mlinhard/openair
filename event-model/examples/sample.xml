@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?><event xmlns="http://michal.linhard.sk/openair/event" name="Super Event">
+	<program>
+		<location name="Stage A">
+			<day date="01-01-2010">
+				<session start="01-01-2010 10:00" duration="1:00" name="Performance A1" />
+				<session start="01-01-2010 11:30" duration="1:00" name="Performance A2" />
+				<session start="01-01-2010 13:00" duration="1:00" name="Performance A3" />
+			</day>
+			<day date="02-01-2010">
+				<session start="02-01-2010 10:00" duration="1:00" name="Performance A4" />
+				<session start="02-01-2010 11:30" duration="1:00" name="Performance A5" />
+				<session start="02-01-2010 13:00" duration="2:00" name="Performance A6" />
+			</day>
+		</location>
+		<location name="Stage B">
+			<day date="01-01-2010">
+				<session start="01-01-2010 10:00" duration="1:00" name="Performance B1" />
+				<session start="01-01-2010 11:30" duration="1:00" name="Performance B2" />
+				<session start="01-01-2010 13:00" duration="1:00" name="Performance B3" />
+			</day>
+			<day date="02-01-2010">
+				<session start="02-01-2010 10:00" duration="1:00" name="Performance B4" />
+				<session start="02-01-2010 11:30" duration="1:00" name="Performance B5" id="sh1" oldVersion="true" />
+				<session start="02-01-2010 13:00" duration="2:00" name="Performance B6" cancelled="true" />
+				<session start="02-01-2010 15:30" duration="1:00" name="Performance B5" id="sh1" />
+			</day>
+		</location>
+		<location name="Stage C">
+			<day date="01-01-2010">
+				<session start="01-01-2010 10:00" duration="1:00" name="Performance C1" />
+				<session start="01-01-2010 11:30" duration="1:00" name="Performance C2" />
+				<session start="01-01-2010 13:00" duration="1:00" name="Performance C3" />
+			</day>
+		</location>
+	</program>
+	<metadata />
+</event>

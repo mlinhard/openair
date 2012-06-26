@@ -1,0 +1,39 @@
+body {
+	font-family: sans-serif;
+}
+
+table thead {
+	background-color: #fff3c2;
+}
+
+table thead th {
+	width: 400px;
+}
+
+table tbody {
+	background-color: #e8e8e8;
+}
+
+table tbody table td.time {
+	width: 120px;
+}
+
+tr.moved {
+	color: #ff5a2a;
+}
+
+tr.cancelled {
+	color: #917c6f;
+}
+
+tr.cancelled td {
+	text-decoration: line-through;
+}
+
+p.footer {
+	margin-top: 50px;
+	color: #aaaaaa;
+	font-size: 0.6em;
+}
+	
+
