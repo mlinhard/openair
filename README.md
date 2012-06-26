@@ -1,4 +1,4 @@
-openair
+OpenAir
 =======
 
 OpenAir Event Programme Suite
