@@ -20,21 +20,20 @@
 package sk.linhard.openair.eventmodel.exceptions;
 
 /**
- * Error in event model.
- * Thrown if some of the simple model constraints are violated.
- *  
- * @author Michal Linhard <michal@linhard.sk> 
+ * Error in event model. Thrown if some of the simple model constraints are violated.
+ * 
+ * @author Michal Linhard <michal@linhard.sk>
  */
 public class EventModelException extends RuntimeException {
-	public static final int DUPLICATE_LOCATION_NAME = 10;
-	
-	private int errorCode;
-	
-	public EventModelException(int anErrorCode) {
-		this.errorCode = anErrorCode;
-	}
+   public static final int DUPLICATE_LOCATION_NAME = 10;
 
-	public int getErrorCode() {
-		return errorCode;
-	}
+   private int errorCode;
+
+   public EventModelException(int anErrorCode) {
+      this.errorCode = anErrorCode;
+   }
+
+   public int getErrorCode() {
+      return errorCode;
+   }
 }

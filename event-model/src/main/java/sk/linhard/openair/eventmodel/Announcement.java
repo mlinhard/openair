@@ -25,105 +25,111 @@ import java.text.SimpleDateFormat;
 import org.joda.time.DateTime;
 
 /**
- * Domain model object for an announcement.
- * Announcement is a brief event-global message that is being shown on all displays
- * displaying anything concerning given event.
+ * Domain model object for an announcement. Announcement is a brief event-global message that is
+ * being shown on all displays displaying anything concerning given event.
  * 
- * @author Michal Linhard <michal@linhard.sk> 
- *
+ * @author Michal Linhard <michal@linhard.sk>
+ * 
  */
 public class Announcement implements Serializable {
-	private boolean active;
-	private DateTime activeFrom;
-	private DateTime activeTo;
-	private String text;
-	private int order;
-	
-	Announcement() {
-		// nothing to do
-	}
+   private boolean active;
+   private DateTime activeFrom;
+   private DateTime activeTo;
+   private String text;
+   private int order;
 
-	/**
-	 * Determine if the announcement is active in given time.
-	 * 
-	 * this is true iff
-	 * active = true
-	 * activeFrom <= aTime
-	 * activeTo >= aTime
-	 * @param aTime
-	 * @return
-	 */
-	public boolean isActive(DateTime aTime) {
-		if (!isActive()) {
-			return false;
-		}
-		if (getActiveFrom() != null && getActiveFrom().isAfter(aTime)) {
-			return false;
-		}
-		if (getActiveTo() != null && getActiveTo().isBefore(aTime)) {
-			return false;
-		}
-		return true;
-	}
-	
-	public boolean isActive() {
-		return active;
-	}
-	void setActive(boolean someActive) {
-		active = someActive;
-	}
-	public DateTime getActiveFrom() {
-		return activeFrom;
-	}
-	void setActiveFrom(DateTime someActiveFrom) {
-		activeFrom = someActiveFrom;
-	}
-	public DateTime getActiveTo() {
-		return activeTo;
-	}
-	void setActiveTo(DateTime someActiveTo) {
-		activeTo = someActiveTo;
-	}
-	public String getText() {
-		return text;
-	}
-	void setText(String someText) {
-		text = someText;
-	}
-	public int getOrder() {
-		return order;
-	}
-	void setOrder(int someOrder) {
-		order = someOrder;
-	}
-	
-	@Override
-	public String toString() {
-		SimpleDateFormat format = new SimpleDateFormat("dd.MM HH:mm");
-		StringBuffer sb = new StringBuffer();
-		sb.append("(");
-		sb.append(getText());
-		if (!isActive()) {
-			sb.append(", INACT");
-		} else {
-			sb.append(", ACT");
-			if (getActiveFrom() != null || getActiveTo() != null) {
-				sb.append(" <");
-				if (getActiveFrom() != null) {
-					sb.append(format.format(getActiveFrom().toDate()));
-				} else {
-					sb.append("-");
-				}
-				sb.append(", ");
-				if (getActiveTo() != null) {
-					sb.append(format.format(getActiveTo()));
-				} else {
-					sb.append("-");
-				}
-				sb.append(">");
-			}
-		}
-		sb.append(")");
-		return sb.toString();
-	}	
+   Announcement() {
+      // nothing to do
+   }
+
+   /**
+    * Determine if the announcement is active in given time.
+    * 
+    * this is true iff active = true activeFrom <= aTime activeTo >= aTime
+    * 
+    * @param aTime
+    * @return
+    */
+   public boolean isActive(DateTime aTime) {
+      if (!isActive()) {
+         return false;
+      }
+      if (getActiveFrom() != null && getActiveFrom().isAfter(aTime)) {
+         return false;
+      }
+      if (getActiveTo() != null && getActiveTo().isBefore(aTime)) {
+         return false;
+      }
+      return true;
+   }
+
+   public boolean isActive() {
+      return active;
+   }
+
+   void setActive(boolean someActive) {
+      active = someActive;
+   }
+
+   public DateTime getActiveFrom() {
+      return activeFrom;
+   }
+
+   void setActiveFrom(DateTime someActiveFrom) {
+      activeFrom = someActiveFrom;
+   }
+
+   public DateTime getActiveTo() {
+      return activeTo;
+   }
+
+   void setActiveTo(DateTime someActiveTo) {
+      activeTo = someActiveTo;
+   }
+
+   public String getText() {
+      return text;
+   }
+
+   void setText(String someText) {
+      text = someText;
+   }
+
+   public int getOrder() {
+      return order;
+   }
+
+   void setOrder(int someOrder) {
+      order = someOrder;
+   }
+
+   @Override
+   public String toString() {
+      SimpleDateFormat format = new SimpleDateFormat("dd.MM HH:mm");
+      StringBuffer sb = new StringBuffer();
+      sb.append("(");
+      sb.append(getText());
+      if (!isActive()) {
+         sb.append(", INACT");
+      } else {
+         sb.append(", ACT");
+         if (getActiveFrom() != null || getActiveTo() != null) {
+            sb.append(" <");
+            if (getActiveFrom() != null) {
+               sb.append(format.format(getActiveFrom().toDate()));
+            } else {
+               sb.append("-");
+            }
+            sb.append(", ");
+            if (getActiveTo() != null) {
+               sb.append(format.format(getActiveTo()));
+            } else {
+               sb.append("-");
+            }
+            sb.append(">");
+         }
+      }
+      sb.append(")");
+      return sb.toString();
+   }
 }

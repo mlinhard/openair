@@ -19,47 +19,77 @@
  */
 package sk.linhard.openair.android;
 
+import sk.linhard.openair.eventmodel.Event;
 import android.app.Activity;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
 
-public class EventListActivity extends Activity implements OnClickListener {
-    private ListView listEvents;
-    private StoredEventAdapter storedEventAdapter;
-    private Cursor cursor;
-    private SQLiteDatabase db;
-    private StoredEventDBHelper dbHelper;
+/**
+ * List of all stored events.
+ * 
+ * @author mlinhard
+ */
+public class EventListActivity extends Activity {
+   private static final String TAG = "EventListActivity";
+   private ListView listEvents;
+   private OpenAirApplication app;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.eventlist);
-        listEvents = (ListView) findViewById(R.id.listEvents);
-        dbHelper = new StoredEventDBHelper(this);
-        db = dbHelper.getReadableDatabase();
-    }
+   private class EventListAdapter extends ArrayAdapter<StoredEvent> implements OnItemClickListener {
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        db.close();
-    }
+      public EventListAdapter(Context context) {
+         super(context, 0, app.getStoredEvents());
+      }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        cursor = db.query(StoredEventDBHelper.TABLE, null, null, null, null, null, null);
-        startManagingCursor(cursor);
-        storedEventAdapter = new StoredEventAdapter(this, cursor);
-        listEvents.setAdapter(storedEventAdapter);
-    }
+      @Override
+      public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+         StoredEvent storedEvent = (StoredEvent) getItem(position);
+         try {
+            Event event = app.load(storedEvent);
+            Intent i = new Intent(EventListActivity.this, EventDetailsActivity.class)
+                  .addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+            i.putExtra("event", event);
+            startActivity(i);
+         } catch (Exception e) {
+            Log.e(TAG, "Error loading event", e);
+            Toast.makeText(EventListActivity.this, "Error loading event.", Toast.LENGTH_LONG).show();
+         }
+      }
 
-    @Override
-    public void onClick(View v) {
+      @Override
+      public View getView(int position, View convertView, ViewGroup parent) {
+         StoredEvent storedEvent = (StoredEvent) getItem(position);
+         View view = LayoutInflater.from(getContext()).inflate(R.layout.eventlistrow, parent, false);
+         TextView textEventTitle = (TextView) view.findViewById(R.id.textEventTitle);
+         textEventTitle.setText(storedEvent.getName());
+         return view;
+      }
 
-    }
+   }
+
+   @Override
+   protected void onCreate(Bundle savedInstanceState) {
+      super.onCreate(savedInstanceState);
+      setContentView(R.layout.eventlist);
+      listEvents = (ListView) findViewById(R.id.listEvents);
+      app = (OpenAirApplication) getApplication();
+   }
+
+   @Override
+   protected void onResume() {
+      super.onResume();
+      EventListAdapter adapter = new EventListAdapter(this);
+      listEvents.setAdapter(adapter);
+      listEvents.setOnItemClickListener(adapter);
+   }
 }

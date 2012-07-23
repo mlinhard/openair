@@ -19,33 +19,33 @@
  */
 package sk.linhard.openair.android;
 
-import sk.linhard.openair.eventmodel.Event;
+import sk.linhard.openair.eventmodel.Session;
 import android.app.Activity;
 import android.os.Bundle;
 import android.widget.TextView;
 
-/**
- * 
- * Event details
- * 
- * @author mlinhard
- */
-public class EventDetailsActivity extends Activity {
-   //private OpenAirApplication app;
-   private Event event;
+public class SessionDetailsActivity extends Activity {
+   private OpenAirApplication app;
+   private Session session;
    private TextView textSessionDetails;
 
    @Override
    protected void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
-      setContentView(R.layout.eventdetails);
-      // app = (OpenAirApplication) getApplication();
-      event = (Event) getIntent().getExtras().get("event");
-      textSessionDetails = (TextView) findViewById(R.id.textEventDetails);
-      StringBuffer s = new StringBuffer(event.getName());
+      setContentView(R.layout.sessiondetails);
+      app = (OpenAirApplication) getApplication();
+      session = (Session) getIntent().getExtras().get("session");
+      textSessionDetails = (TextView) findViewById(R.id.textSessionDetails);
+      StringBuffer s = new StringBuffer(session.getName());
+      s.append("\n\nStart: ");
+      s.append(session.getFormattedStartTime());
+      s.append(" ");
+      s.append(app.getDayString(session.getStart()));
+      s.append("\nLocation: ");
+      s.append(session.getLocation().getName());
       s.append("\n\n");
-      if (event.getMetadata() != null && event.getMetadata().getDescription() != null) {
-         s.append(event.getMetadata().getDescription());
+      if (session.getMetadata() != null && session.getMetadata().getDescription() != null) {
+         s.append(session.getMetadata().getDescription());
       } else {
          s.append("No description available");
       }

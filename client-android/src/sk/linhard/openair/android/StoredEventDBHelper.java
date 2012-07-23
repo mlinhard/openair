@@ -31,76 +31,76 @@ import android.provider.BaseColumns;
 import android.util.Log;
 
 public class StoredEventDBHelper extends SQLiteOpenHelper {
-    static final String TAG = "StoredEventDBHelper";
-    static final String DB_NAME = "storedevents.db"; // <2>
-    static final int DB_VERSION = 2; // <3>
-    static final String TABLE = "storedevents"; // <4>
-    static final String C_ID = BaseColumns._ID;
-    static final String C_NAME = "name";
-    static final String C_URI = "uri";
-    static final String C_PATH = "path";
-    static final String C_VERSION = "version";
-    static final String C_ACTIVE = "active";
-    Context context;
+   static final String TAG = "StoredEventDBHelper";
+   static final String DB_NAME = "storedevents.db"; // <2>
+   static final int DB_VERSION = 2; // <3>
+   static final String TABLE = "storedevents"; // <4>
+   static final String C_ID = BaseColumns._ID;
+   static final String C_NAME = "name";
+   static final String C_URI = "uri";
+   static final String C_PATH = "path";
+   static final String C_VERSION = "version";
+   static final String C_ACTIVE = "active";
+   Context context;
 
-    public StoredEventDBHelper(Context context) {
-        super(context, DB_NAME, null, DB_VERSION);
-    }
+   public StoredEventDBHelper(Context context) {
+      super(context, DB_NAME, null, DB_VERSION);
+   }
 
-    @Override
-    public void onCreate(SQLiteDatabase db) {
-        String sql = "create table " + TABLE + " (" + C_ID + " int primary key, " + C_NAME + " text, " + C_URI + " text, " + C_PATH + " text, " + C_VERSION
-                + " int, " + C_ACTIVE + " int)";
+   @Override
+   public void onCreate(SQLiteDatabase db) {
+      String sql = "create table " + TABLE + " (" + C_ID + " int primary key, " + C_NAME + " text, " + C_URI
+            + " text, " + C_PATH + " text, " + C_VERSION + " int, " + C_ACTIVE + " int)";
 
-        db.execSQL(sql);
+      db.execSQL(sql);
 
-        Log.d(TAG, "onCreated sql: " + sql);
-    }
+      Log.d(TAG, "onCreated sql: " + sql);
+   }
 
-    @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) { // <8>
+   @Override
+   public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) { // <8>
 
-        db.execSQL("drop table if exists " + TABLE);
-        Log.d(TAG, "onUpdated");
-        onCreate(db);
-    }
+      db.execSQL("drop table if exists " + TABLE);
+      Log.d(TAG, "onUpdated");
+      onCreate(db);
+   }
 
-    public List<StoredEvent> getList() {
-        SQLiteDatabase db = null;
-        try {
-            db = getReadableDatabase();
-            Cursor c = db.query(TABLE, null, C_ACTIVE + " = 1", null, null, null, null);
-            List<StoredEvent> rr = new ArrayList<StoredEvent>(c.getCount());
-            while (c.moveToNext()) {
-                StoredEvent r = new StoredEvent();
-                r.setId(c.getString(c.getColumnIndex(C_ID)));
-                r.setName(c.getString(c.getColumnIndex(C_NAME)));
-                r.setPath(c.getString(c.getColumnIndex(C_PATH)));
-                r.setActive(c.getInt(c.getColumnIndex(C_ACTIVE)) == 1);
-                r.setUri(c.getString(c.getColumnIndex(C_URI)));
-                r.setVersion(c.getLong(c.getColumnIndex(C_VERSION)));
-                rr.add(r);
-            }
-            return rr;
-        } finally {
-            if (db != null) {
-                db.close();
-            }
-        }
-    }
+   public List<StoredEvent> getList() {
+      SQLiteDatabase db = null;
+      try {
+         db = getReadableDatabase();
+         Cursor c = db.query(TABLE, null, C_ACTIVE + " = 1", null, null, null, null);
+         List<StoredEvent> rr = new ArrayList<StoredEvent>(c.getCount());
+         while (c.moveToNext()) {
+            StoredEvent r = new StoredEvent();
+            r.setId(c.getString(c.getColumnIndex(C_ID)));
+            r.setName(c.getString(c.getColumnIndex(C_NAME)));
+            r.setPath(c.getString(c.getColumnIndex(C_PATH)));
+            r.setActive(c.getInt(c.getColumnIndex(C_ACTIVE)) == 1);
+            r.setUri(c.getString(c.getColumnIndex(C_URI)));
+            r.setVersion(c.getLong(c.getColumnIndex(C_VERSION)));
+            rr.add(r);
+         }
+         return rr;
+      } finally {
+         if (db != null) {
+            db.close();
+         }
+      }
+   }
 
-    public static ContentValues toContentValues(StoredEvent e) {
-        ContentValues cv = new ContentValues();
-        cv.put(StoredEventDBHelper.C_NAME, e.getName());
-        cv.put(StoredEventDBHelper.C_PATH, e.getPath());
-        cv.put(StoredEventDBHelper.C_URI, e.getUri());
-        cv.put(StoredEventDBHelper.C_VERSION, e.getVersion());
-        cv.put(StoredEventDBHelper.C_ACTIVE, e.isActive() ? 1 : 0);
-        return cv;
-    }
+   public static ContentValues toContentValues(StoredEvent e) {
+      ContentValues cv = new ContentValues();
+      cv.put(StoredEventDBHelper.C_NAME, e.getName());
+      cv.put(StoredEventDBHelper.C_PATH, e.getPath());
+      cv.put(StoredEventDBHelper.C_URI, e.getUri());
+      cv.put(StoredEventDBHelper.C_VERSION, e.getVersion());
+      cv.put(StoredEventDBHelper.C_ACTIVE, e.isActive() ? 1 : 0);
+      return cv;
+   }
 
-    public static long insert(SQLiteDatabase db, StoredEvent e) {
-        return db.insert(TABLE, null, toContentValues(e));
-    }
+   public static long insert(SQLiteDatabase db, StoredEvent e) {
+      return db.insert(TABLE, null, toContentValues(e));
+   }
 
 }

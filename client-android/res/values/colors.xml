@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <color name="colLocationAreaOverview">#FF0000</color>
+    <color name="colLocationTextOverview">#F7FF5C</color>
+    <color name="colDayProgramText">#E01B6A</color>
+    <color name="colDebugClockText">#F78DB8</color>
+
+</resources>

@@ -4,5 +4,15 @@
     <string name="app_name">OpenAir</string>
     <string name="menuEvents">Events</string>
     <string name="menuLocations">Locations</string>
-    
+    <string name="textDebugTime">Debug time</string>
+    <string name="textDebugTimeSet">Set</string>
+    <string name="textDebugNextSwitch">Next switch</string>
+    <string name="textMonday">Monday</string>
+    <string name="textTuesday">Tuesday</string>
+    <string name="textWednesday">Wednesday</string>
+    <string name="textThursday">Thursday</string>
+    <string name="textFriday">Friday</string>
+    <string name="textSaturday">Saturday</string>
+    <string name="textSunday">Sunday</string>
+
 </resources>

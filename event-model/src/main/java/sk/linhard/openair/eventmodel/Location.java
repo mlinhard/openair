@@ -31,148 +31,148 @@ import org.joda.time.DateTime;
  * @author Michal Linhard <michal@linhard.sk>
  */
 public class Location implements Iterable<DayProgram>, Serializable {
-    private Event event;
+   private Event event;
 
-    private String name;
-    private String shortName;
-    private DayProgram[] dayPrograms;
-    private LocationMetadata metadata;
+   private String name;
+   private String shortName;
+   private DayProgram[] dayPrograms;
+   private LocationMetadata metadata;
 
-    private class DayProgramIterator implements Iterator<DayProgram> {
-        private int currentPos = 0;
+   private class DayProgramIterator implements Iterator<DayProgram> {
+      private int currentPos = 0;
 
-        @Override
-        public boolean hasNext() {
-            if (dayPrograms == null) {
-                return false;
-            }
-            return currentPos < dayPrograms.length;
-        }
+      @Override
+      public boolean hasNext() {
+         if (dayPrograms == null) {
+            return false;
+         }
+         return currentPos < dayPrograms.length;
+      }
 
-        @Override
-        public DayProgram next() {
-            DayProgram result = dayPrograms[currentPos];
-            currentPos++;
-            return result;
-        }
+      @Override
+      public DayProgram next() {
+         DayProgram result = dayPrograms[currentPos];
+         currentPos++;
+         return result;
+      }
 
-        @Override
-        public void remove() {
-            throw new UnsupportedOperationException();
-        }
-    }
+      @Override
+      public void remove() {
+         throw new UnsupportedOperationException();
+      }
+   }
 
-    public Location(String aName) {
-        this.name = aName;
-        this.shortName = null;
-        this.metadata = null;
-    }
+   public Location(String aName) {
+      this.name = aName;
+      this.shortName = null;
+      this.metadata = null;
+   }
 
-    public DayProgram addDay(DateTime aDayStart) {
-        DayProgram dayProgram = new DayProgram(aDayStart);
-        dayProgram.setLocation(this);
-        if (dayPrograms == null) {
-            dayPrograms = new DayProgram[] { dayProgram };
-            return dayProgram;
-        }
-        DayProgram[] newdayPrograms = Arrays.copyOf(dayPrograms, dayPrograms.length + 1);
-        newdayPrograms[dayPrograms.length] = dayProgram;
-        dayPrograms = newdayPrograms;
-        return dayProgram;
-    }
+   public DayProgram addDay(DateTime aDayStart) {
+      DayProgram dayProgram = new DayProgram(aDayStart);
+      dayProgram.setLocation(this);
+      if (dayPrograms == null) {
+         dayPrograms = new DayProgram[] { dayProgram };
+         return dayProgram;
+      }
+      DayProgram[] newdayPrograms = Arrays.copyOf(dayPrograms, dayPrograms.length + 1);
+      newdayPrograms[dayPrograms.length] = dayProgram;
+      dayPrograms = newdayPrograms;
+      return dayProgram;
+   }
 
-    public String getUrl() {
-        return metadata == null ? null : metadata.getUrl();
-    }
+   public String getUrl() {
+      return metadata == null ? null : metadata.getUrl();
+   }
 
-    public void setUrl(String anUrl) {
-        if (metadata == null) {
-            metadata = new LocationMetadata();
-        }
-        metadata.setUrl(anUrl);
-    }
+   public void setUrl(String anUrl) {
+      if (metadata == null) {
+         metadata = new LocationMetadata();
+      }
+      metadata.setUrl(anUrl);
+   }
 
-    public String getDescription() {
-        return metadata == null ? null : metadata.getDescription();
-    }
+   public String getDescription() {
+      return metadata == null ? null : metadata.getDescription();
+   }
 
-    public void setDescription(String aDescription) {
-        if (metadata == null) {
-            metadata = new LocationMetadata();
-        }
-        metadata.setDescription(aDescription);
-    }
+   public void setDescription(String aDescription) {
+      if (metadata == null) {
+         metadata = new LocationMetadata();
+      }
+      metadata.setDescription(aDescription);
+   }
 
-    public String getName() {
-        return name;
-    }
+   public String getName() {
+      return name;
+   }
 
-    public String getShortName() {
-        return shortName;
-    }
+   public String getShortName() {
+      return shortName;
+   }
 
-    public void setShortName(String shortName) {
-        this.shortName = shortName;
-    }
+   public void setShortName(String shortName) {
+      this.shortName = shortName;
+   }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+   public void setName(String name) {
+      this.name = name;
+   }
 
-    @Override
-    public Iterator<DayProgram> iterator() {
-        return new DayProgramIterator();
-    }
+   @Override
+   public Iterator<DayProgram> iterator() {
+      return new DayProgramIterator();
+   }
 
-    public LocationMetadata getMetadata() {
-        return metadata;
-    }
+   public LocationMetadata getMetadata() {
+      return metadata;
+   }
 
-    public void setMetadata(LocationMetadata metadata) {
-        this.metadata = metadata;
-    }
+   public void setMetadata(LocationMetadata metadata) {
+      this.metadata = metadata;
+   }
 
-    public DayProgram findDayProgram(DateTime startDate) {
-        for (DayProgram d : this) {
-            if (d.getDayStart().equals(startDate)) {
-                return d;
-            }
-        }
-        return null;
-    }
+   public DayProgram findDayProgram(DateTime startDate) {
+      for (DayProgram d : this) {
+         if (d.getDayStart().equals(startDate)) {
+            return d;
+         }
+      }
+      return null;
+   }
 
-    public Event getEvent() {
-        return event;
-    }
+   public Event getEvent() {
+      return event;
+   }
 
-    public void setEvent(Event event) {
-        this.event = event;
-    }
+   public void setEvent(Event event) {
+      this.event = event;
+   }
 
-    /**
-     * Returns the first day program which has some relevant performances with
-     * respect to current time.
-     * 
-     * @param aTime
-     *            current time.
-     * 
-     * @return first relevant day program. may be null.
-     */
-    public DayProgram getFirstRelevantDayProgram(DateTime aTime) {
-        for (DayProgram eachProg : dayPrograms) {
-            if (eachProg.hasRelevantSessions(aTime)) {
-                return eachProg;
-            }
-        }
-        return null;
-    }
+   /**
+    * Returns the first day program which has some relevant performances with respect to current
+    * time.
+    * 
+    * @param aTime
+    *           current time.
+    * 
+    * @return first relevant day program. may be null.
+    */
+   public DayProgram getFirstRelevantDayProgram(DateTime aTime) {
+      for (DayProgram eachProg : dayPrograms) {
+         if (eachProg.hasRelevantSessions(aTime)) {
+            return eachProg;
+         }
+      }
+      return null;
+   }
 
-    public DayProgram[] getDayPrograms() {
-        return dayPrograms;
-    }
+   public DayProgram[] getDayPrograms() {
+      return dayPrograms;
+   }
 
-    public void setDayPrograms(DayProgram[] dayPrograms) {
-        this.dayPrograms = dayPrograms;
-    }
+   public void setDayPrograms(DayProgram[] dayPrograms) {
+      this.dayPrograms = dayPrograms;
+   }
 
 }

@@ -25,59 +25,59 @@ package sk.linhard.openair.android;
  * 
  */
 public class StoredEvent {
-	private String id;
-	private String name;
-	private String uri;
-	private String path;
-	private Long version;
-	private boolean active;
+   private String id;
+   private String name;
+   private String uri;
+   private String path;
+   private Long version;
+   private boolean active;
 
-	public String getId() {
-		return id;
-	}
+   public String getId() {
+      return id;
+   }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+   public void setId(String id) {
+      this.id = id;
+   }
 
-	public String getName() {
-		return name;
-	}
+   public String getName() {
+      return name;
+   }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+   public void setName(String name) {
+      this.name = name;
+   }
 
-	public String getPath() {
-		return path;
-	}
+   public String getPath() {
+      return path;
+   }
 
-	public void setPath(String path) {
-		this.path = path;
-	}
+   public void setPath(String path) {
+      this.path = path;
+   }
 
-	public String getUri() {
-		return uri;
-	}
+   public String getUri() {
+      return uri;
+   }
 
-	public void setUri(String uri) {
-		this.uri = uri;
-	}
+   public void setUri(String uri) {
+      this.uri = uri;
+   }
 
-	public Long getVersion() {
-		return version;
-	}
+   public Long getVersion() {
+      return version;
+   }
 
-	public void setVersion(Long version) {
-		this.version = version;
-	}
+   public void setVersion(Long version) {
+      this.version = version;
+   }
 
-	public boolean isActive() {
-		return active;
-	}
+   public boolean isActive() {
+      return active;
+   }
 
-	public void setActive(boolean active) {
-		this.active = active;
-	}
+   public void setActive(boolean active) {
+      this.active = active;
+   }
 
 }
