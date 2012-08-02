@@ -19,24 +19,31 @@
  */
 package sk.linhard.openair.android;
 
+import java.io.Serializable;
+
+import sk.linhard.openair.eventmodel.Event;
+
 /**
  * 
- * @author mlinhard
+ * Metadata about event stored on the device.
+ * 
+ * @author Michal Linhard <michal@linhard.sk>
  * 
  */
-public class StoredEvent {
-   private String id;
+public class StoredEvent implements Serializable, Comparable<StoredEvent> {
+   private Long id;
    private String name;
    private String uri;
    private String path;
    private Long version;
    private boolean active;
+   private Event event;
 
-   public String getId() {
+   public Long getId() {
       return id;
    }
 
-   public void setId(String id) {
+   public void setId(Long id) {
       this.id = id;
    }
 
@@ -78,6 +85,50 @@ public class StoredEvent {
 
    public void setActive(boolean active) {
       this.active = active;
+   }
+
+   public Event getEvent() {
+      return event;
+   }
+
+   public void setEvent(Event event) {
+      this.event = event;
+   }
+
+   @Override
+   public String toString() {
+      return "StoredEvent [id=" + id + ", name=" + name + ", uri=" + uri + ", path=" + path + ", version=" + version
+            + ", active=" + active + "]";
+   }
+
+   @Override
+   public int hashCode() {
+      final int prime = 31;
+      int result = 1;
+      result = prime * result + ((id == null) ? 0 : id.hashCode());
+      return result;
+   }
+
+   @Override
+   public boolean equals(Object obj) {
+      if (this == obj)
+         return true;
+      if (obj == null)
+         return false;
+      if (getClass() != obj.getClass())
+         return false;
+      StoredEvent other = (StoredEvent) obj;
+      if (id == null) {
+         if (other.id != null)
+            return false;
+      } else if (!id.equals(other.id))
+         return false;
+      return true;
+   }
+
+   @Override
+   public int compareTo(StoredEvent another) {
+      return this.getName().compareTo(another.getName());
    }
 
 }

@@ -28,7 +28,6 @@ import org.joda.time.Duration;
 import sk.linhard.openair.displaymodel.OverviewData;
 import sk.linhard.openair.displaymodel.OverviewDataSessionItem;
 import sk.linhard.openair.displaymodel.OverviewDisplay;
-import sk.linhard.openair.eventmodel.Event;
 import sk.linhard.openair.eventmodel.Session;
 import sk.linhard.openair.eventmodel.util.Util;
 import android.app.Activity;
@@ -40,7 +39,6 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -56,11 +54,12 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 /**
  * Shows the program overview of the whole event.
  * 
- * @author mlinhard
+ * @author Michal Linhard <michal@linhard.sk>
  * 
  */
 public class OverviewActivity extends Activity {
@@ -68,7 +67,7 @@ public class OverviewActivity extends Activity {
    private Runnable updateListView = new Runnable() {
       @Override
       public void run() {
-         updateListView();
+         updateList();
       }
    };
    private Runnable updateDebugClock = new Runnable() {
@@ -79,6 +78,9 @@ public class OverviewActivity extends Activity {
    };
 
    private static Object[] toItems(OverviewData data) {
+      if (data == null) {
+         return new Object[0];
+      }
       ArrayList<Object> result = new ArrayList<Object>();
       for (OverviewDataSessionItem item : data.getItems()) {
          result.add(item);
@@ -148,7 +150,6 @@ public class OverviewActivity extends Activity {
    private OpenAirApplication app;
    private ListView listOverview;
    private TextView debugClock;
-   private Handler mHandler = new Handler();
    private OverviewData displayData;
 
    @Override
@@ -158,8 +159,9 @@ public class OverviewActivity extends Activity {
       app = (OpenAirApplication) getApplication();
       listOverview = (ListView) findViewById(R.id.listOverview);
       debugClock = (TextView) LayoutInflater.from(this).inflate(R.layout.debug_clock, null);
+      debugClock.setVisibility(app.isShowDebugTime() ? View.VISIBLE : View.INVISIBLE);
       final WindowManager mWindowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
-      mHandler.post(new Runnable() {
+      debugClock.post(new Runnable() {
 
          public void run() {
             WindowManager.LayoutParams lp = new WindowManager.LayoutParams(LayoutParams.WRAP_CONTENT,
@@ -170,23 +172,40 @@ public class OverviewActivity extends Activity {
             mWindowManager.addView(debugClock, lp);
          }
       });
-      updateListView();
-      updateDebugClock();
    }
 
    public void updateDebugClock() {
       debugClock.setText(app.getShiftedTimeFormatted());
-      mHandler.postDelayed(updateDebugClock, 200);
+      debugClock.postDelayed(updateDebugClock, 200);
    }
 
-   public void updateListView() {
-      Log.d(TAG, "Updating overview");
-      Event event = app.getActiveEvent();
-      displayData = new OverviewDisplay(event).getData(app.getShiftedTime(), 2, event.getLocationNames(), 60);
+   private void cleanAndExitToEventList() {
+      displayData = null;
       OverviewAdapter adapter = new OverviewAdapter(this, displayData);
       listOverview.setAdapter(adapter);
       listOverview.setOnItemClickListener(adapter);
-      sheduleUpdateAt(displayData.getNextDisplayChange());
+      Toast.makeText(this, getString(R.string.textNoActiveEvent), Toast.LENGTH_SHORT).show();
+      finish();
+      startActivity(new Intent(this, EventListActivity.class).addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT));
+   }
+
+   private void updateList() {
+      Log.d(TAG, "Updating overview");
+      StoredEvent activeEvent = app.getActiveEvent();
+      if (activeEvent == null) {
+         cleanAndExitToEventList();
+      } else if (!app.load(activeEvent)) {
+         app.unsetActive(activeEvent);
+         cleanAndExitToEventList();
+      } else {
+         displayData = new OverviewDisplay(activeEvent.getEvent()).getData(app.getShiftedTime(), 2, activeEvent
+               .getEvent().getLocationNames(), 60);
+         OverviewAdapter adapter = new OverviewAdapter(this, displayData);
+         listOverview.setAdapter(adapter);
+         listOverview.setOnItemClickListener(adapter);
+         sheduleUpdateAt(displayData.getNextDisplayChange());
+      }
+
    }
 
    private void sheduleUpdateAt(DateTime aTime) {
@@ -196,8 +215,9 @@ public class OverviewActivity extends Activity {
       long millisDelay = new Duration(app.getShiftedTime(), aTime).getMillis();
       Log.d(TAG, "Scheduling next update for " + aTime + " that's in " + millisDelay + " ms");
       if (millisDelay <= 0) {
-         updateListView();
+         updateList();
       } else {
+         listOverview.removeCallbacks(updateListView);
          listOverview.postDelayed(updateListView, millisDelay);
       }
    }
@@ -213,6 +233,21 @@ public class OverviewActivity extends Activity {
    @Override
    protected void onResume() {
       super.onResume();
+      updateList();
+      if (app.isShowDebugTime()) {
+         debugClock.setVisibility(View.VISIBLE);
+         updateDebugClock();
+      } else {
+         debugClock.removeCallbacks(updateDebugClock);
+         debugClock.setVisibility(View.INVISIBLE);
+      }
+   }
+
+   @Override
+   protected void onPause() {
+      super.onPause();
+      debugClock.removeCallbacks(updateDebugClock);
+      listOverview.removeCallbacks(updateListView);
    }
 
    @Override
@@ -233,7 +268,20 @@ public class OverviewActivity extends Activity {
          break;
       case R.id.itemDebugNextSwitch:
          app.setShiftedTime(displayData.getNextDisplayChange());
-         updateListView();
+         updateList();
+         break;
+      case R.id.itemToggleDebugTime:
+         if (app.isShowDebugTime()) {
+            app.setShowDebugTime(false);
+            item.setChecked(false);
+            debugClock.setVisibility(View.INVISIBLE);
+            debugClock.removeCallbacks(updateDebugClock);
+         } else {
+            app.setShowDebugTime(true);
+            item.setChecked(true);
+            debugClock.setVisibility(View.VISIBLE);
+            updateDebugClock();
+         }
          break;
       }
       return true;
@@ -270,8 +318,8 @@ public class OverviewActivity extends Activity {
                      } else {
                         app.setShiftedTime(shiftedTime);
                         Log.d(TAG, "Shifted time set to: " + app.getShiftedTimeFormatted());
-                        mHandler.removeCallbacks(updateListView);
-                        mHandler.post(updateListView);
+                        listOverview.removeCallbacks(updateListView);
+                        listOverview.post(updateListView);
                      }
                   }
                }).create();

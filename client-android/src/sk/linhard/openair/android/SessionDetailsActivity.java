@@ -24,6 +24,12 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.widget.TextView;
 
+/**
+ * 
+ * Displays details about a session (performance/concert/talk).
+ * 
+ * @author Michal Linhard <michal@linhard.sk>
+ */
 public class SessionDetailsActivity extends Activity {
    private OpenAirApplication app;
    private Session session;

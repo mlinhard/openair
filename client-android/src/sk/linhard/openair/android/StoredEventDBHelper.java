@@ -30,6 +30,13 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
 import android.util.Log;
 
+/**
+ * 
+ * StoredEventDBHelper.
+ * 
+ * @author Michal Linhard <michal@linhard.sk>
+ * 
+ */
 public class StoredEventDBHelper extends SQLiteOpenHelper {
    static final String TAG = "StoredEventDBHelper";
    static final String DB_NAME = "storedevents.db"; // <2>
@@ -41,6 +48,7 @@ public class StoredEventDBHelper extends SQLiteOpenHelper {
    static final String C_PATH = "path";
    static final String C_VERSION = "version";
    static final String C_ACTIVE = "active";
+   static final String WHERE_ID = C_ID + " = ?";
    Context context;
 
    public StoredEventDBHelper(Context context) {
@@ -49,39 +57,41 @@ public class StoredEventDBHelper extends SQLiteOpenHelper {
 
    @Override
    public void onCreate(SQLiteDatabase db) {
-      String sql = "create table " + TABLE + " (" + C_ID + " int primary key, " + C_NAME + " text, " + C_URI
-            + " text, " + C_PATH + " text, " + C_VERSION + " int, " + C_ACTIVE + " int)";
+      String sql = "create table " + TABLE + " (" + C_ID + " integer primary key autoincrement, " + C_NAME + " text, " + C_URI
+            + " text, " + C_PATH + " text, " + C_VERSION + " integer, " + C_ACTIVE + " integer)";
 
       db.execSQL(sql);
 
       Log.d(TAG, "onCreated sql: " + sql);
    }
+   
+   public void dumpDB() {
+      List<StoredEvent> list = getAll();
+      StringBuffer s = new StringBuffer();
+      for (StoredEvent item : list) {
+         s.append(item);
+         s.append("\n");
+      }
+      System.out.println(s.toString());
+   }
 
    @Override
-   public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) { // <8>
-
+   public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
       db.execSQL("drop table if exists " + TABLE);
       Log.d(TAG, "onUpdated");
       onCreate(db);
    }
 
-   public List<StoredEvent> getList() {
+   public List<StoredEvent> getAll() {
       SQLiteDatabase db = null;
       try {
          db = getReadableDatabase();
-         Cursor c = db.query(TABLE, null, C_ACTIVE + " = 1", null, null, null, null);
-         List<StoredEvent> rr = new ArrayList<StoredEvent>(c.getCount());
+         Cursor c = db.query(TABLE, null, null, null, null, null, null);
+         List<StoredEvent> r = new ArrayList<StoredEvent>(c.getCount());
          while (c.moveToNext()) {
-            StoredEvent r = new StoredEvent();
-            r.setId(c.getString(c.getColumnIndex(C_ID)));
-            r.setName(c.getString(c.getColumnIndex(C_NAME)));
-            r.setPath(c.getString(c.getColumnIndex(C_PATH)));
-            r.setActive(c.getInt(c.getColumnIndex(C_ACTIVE)) == 1);
-            r.setUri(c.getString(c.getColumnIndex(C_URI)));
-            r.setVersion(c.getLong(c.getColumnIndex(C_VERSION)));
-            rr.add(r);
+            r.add(fromCursor(c));
          }
-         return rr;
+         return r;
       } finally {
          if (db != null) {
             db.close();
@@ -89,18 +99,76 @@ public class StoredEventDBHelper extends SQLiteOpenHelper {
       }
    }
 
-   public static ContentValues toContentValues(StoredEvent e) {
+   private static StoredEvent fromCursor(Cursor c) {
+      StoredEvent r = new StoredEvent();
+      r.setId(c.getLong(c.getColumnIndex(C_ID)));
+      r.setName(c.getString(c.getColumnIndex(C_NAME)));
+      r.setPath(c.getString(c.getColumnIndex(C_PATH)));
+      r.setActive(c.getInt(c.getColumnIndex(C_ACTIVE)) == 1);
+      r.setUri(c.getString(c.getColumnIndex(C_URI)));
+      r.setVersion(c.getLong(c.getColumnIndex(C_VERSION)));
+      return r;
+   }
+
+   private static ContentValues toContentValues(StoredEvent e) {
       ContentValues cv = new ContentValues();
-      cv.put(StoredEventDBHelper.C_NAME, e.getName());
-      cv.put(StoredEventDBHelper.C_PATH, e.getPath());
-      cv.put(StoredEventDBHelper.C_URI, e.getUri());
-      cv.put(StoredEventDBHelper.C_VERSION, e.getVersion());
-      cv.put(StoredEventDBHelper.C_ACTIVE, e.isActive() ? 1 : 0);
+      cv.put(C_NAME, e.getName());
+      cv.put(C_PATH, e.getPath());
+      cv.put(C_URI, e.getUri());
+      cv.put(C_VERSION, e.getVersion());
+      cv.put(C_ACTIVE, e.isActive() ? 1 : 0);
       return cv;
    }
 
-   public static long insert(SQLiteDatabase db, StoredEvent e) {
-      return db.insert(TABLE, null, toContentValues(e));
+   public long insert(StoredEvent e) {
+      SQLiteDatabase db = null;
+      try {
+         db = getWritableDatabase();
+         long id = db.insert(TABLE, null, toContentValues(e));
+         if (id != -1) {
+            e.setId(id);
+         }
+         return id;
+      } finally {
+         if (db != null) {
+            db.close();
+         }
+      }
    }
 
+   public int delete(StoredEvent e) {
+      SQLiteDatabase db = null;
+      try {
+         db = getWritableDatabase();
+         return db.delete(TABLE, WHERE_ID, new String[] { Long.toString(e.getId()) });
+      } finally {
+         if (db != null) {
+            db.close();
+         }
+      }
+   }
+   
+   public int deleteAll() {
+      SQLiteDatabase db = null;
+      try {
+         db = getWritableDatabase();
+         return db.delete(TABLE, null, null);
+      } finally {
+         if (db != null) {
+            db.close();
+         }
+      }
+   }
+
+   public int update(StoredEvent e) {
+      SQLiteDatabase db = null;
+      try {
+         db = getWritableDatabase();
+         return db.update(TABLE, toContentValues(e), WHERE_ID, new String[] { Long.toString(e.getId()) });
+      } finally {
+         if (db != null) {
+            db.close();
+         }
+      }
+   }
 }

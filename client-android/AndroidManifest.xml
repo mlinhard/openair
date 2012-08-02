@@ -2,15 +2,16 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="sk.linhard.openair.android"
     android:versionCode="1"
-    android:versionName="1.0" >
+    android:versionName="1.0.0.Beta1" >
 
     <uses-sdk android:minSdkVersion="8" />
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:name="OpenAirApplication"
-        android:icon="@drawable/ic_launcher"
+        android:icon="@drawable/openair_icon"
         android:label="@string/app_name" >
         <activity android:name=".OverviewActivity" >
             <intent-filter>
@@ -22,6 +23,16 @@
         <activity android:name="EventDetailsActivity" >
         </activity>
         <activity android:name="EventListActivity" >
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:pathPattern=".*\\.evt\\.zip"
+                    android:scheme="http" />
+            </intent-filter>
         </activity>
         <activity android:name="LocationProgramActivity" >
         </activity>

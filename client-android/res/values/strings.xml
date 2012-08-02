@@ -4,6 +4,7 @@
     <string name="app_name">OpenAir</string>
     <string name="menuEvents">Events</string>
     <string name="menuLocations">Locations</string>
+    <string name="menuScanFilesystem">Scan filesystem</string>
     <string name="textDebugTime">Debug time</string>
     <string name="textDebugTimeSet">Set</string>
     <string name="textDebugNextSwitch">Next switch</string>
@@ -14,5 +15,13 @@
     <string name="textFriday">Friday</string>
     <string name="textSaturday">Saturday</string>
     <string name="textSunday">Sunday</string>
-
+    <string name="textBuSetAsActive">Set as active</string>
+    <string name="textBuDelete">Delete</string>
+    <string name="textBuUpdate">Update</string>
+    <string name="textDebugTimeToggle">Toggle debug time</string>
+    <string name="textNoActiveEvent">No active event defined</string>
+    <string name="menuGetFromWeb">Get from Web</string>
+    <string name="textBuCancel">Cancel</string>
+    <string name="textBuOK">OK</string>
+    
 </resources>

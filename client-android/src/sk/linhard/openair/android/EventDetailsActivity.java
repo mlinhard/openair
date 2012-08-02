@@ -19,37 +19,92 @@
  */
 package sk.linhard.openair.android;
 
-import sk.linhard.openair.eventmodel.Event;
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 /**
  * 
  * Event details
  * 
- * @author mlinhard
+ * @author Michal Linhard <michal@linhard.sk>
  */
-public class EventDetailsActivity extends Activity {
-   //private OpenAirApplication app;
-   private Event event;
+public class EventDetailsActivity extends Activity implements OnClickListener {
+   private OpenAirApplication app;
+   private StoredEvent storedEvent;
    private TextView textSessionDetails;
+   private Button buSetAsActive;
+   private Button buDelete;
+   private Button buUpdate;
 
    @Override
    protected void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
       setContentView(R.layout.eventdetails);
-      // app = (OpenAirApplication) getApplication();
-      event = (Event) getIntent().getExtras().get("event");
+      app = (OpenAirApplication) getApplication();
+      storedEvent = (StoredEvent) getIntent().getExtras().get("storedEvent");
+      if (storedEvent == null) {
+         throw new IllegalStateException("No event defined!");
+      }
+      if (storedEvent.getEvent() == null) {
+         if (!app.load(storedEvent)) {
+            Toast.makeText(this, "Unable to load event " + storedEvent.getName(), Toast.LENGTH_LONG).show();
+            finish();
+         }
+      }
       textSessionDetails = (TextView) findViewById(R.id.textEventDetails);
-      StringBuffer s = new StringBuffer(event.getName());
+      buDelete = (Button) findViewById(R.id.buDelete);
+      buUpdate = (Button) findViewById(R.id.buUpdate);
+      buSetAsActive = (Button) findViewById(R.id.buSetAsActive);
+      buDelete.setOnClickListener(this);
+      buUpdate.setOnClickListener(this);
+      buSetAsActive.setOnClickListener(this);
+      StringBuffer s = new StringBuffer(storedEvent.getEvent().getName());
       s.append("\n\n");
-      if (event.getMetadata() != null && event.getMetadata().getDescription() != null) {
-         s.append(event.getMetadata().getDescription());
+      if (storedEvent.getEvent().getMetadata() != null && storedEvent.getEvent().getMetadata().getDescription() != null) {
+         s.append(storedEvent.getEvent().getMetadata().getDescription());
       } else {
          s.append("No description available");
       }
 
       textSessionDetails.setText(s.toString());
    }
+
+   @Override
+   public void onClick(View v) {
+      if (buDelete == v) {
+         if (!app.delete(storedEvent)) {
+            Log.e(TAG, "Couldn't remove stored event " + storedEvent + " from internal database");
+         }
+         finish();
+         startActivity(new Intent(EventDetailsActivity.this, EventListActivity.class)
+               .addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT));
+      } else if (buUpdate == v) {
+         Toast.makeText(this, "Not yet implemented", Toast.LENGTH_SHORT).show();
+      } else if (buSetAsActive == v) {
+         app.setAsActive(storedEvent);
+         finish();
+         startActivity(new Intent(EventDetailsActivity.this, OverviewActivity.class)
+               .addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT));
+      } else {
+         Log.e(TAG, "Unexpected click source");
+      }
+   }
+
+   @Override
+   protected void onDestroy() {
+      super.onDestroy();
+      // deserialized event can be garbage collected if it's not the active one
+      if (!storedEvent.isActive()) {
+         storedEvent.setEvent(null);
+      }
+   }
+
+   private static final String TAG = "EventDetails";
 }

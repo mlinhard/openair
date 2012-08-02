@@ -3,6 +3,5 @@
     <item android:id="@+id/itemEvents" android:title="@string/menuEvents"></item>
     <item android:id="@+id/itemDebugTime" android:title="Set debug time"></item>
     <item android:id="@+id/itemDebugNextSwitch" android:title="@string/textDebugNextSwitch"></item>
-    
-
+    <item android:id="@+id/itemToggleDebugTime" android:checkable="true" android:title="@string/textDebugTimeToggle"></item>
 </menu>

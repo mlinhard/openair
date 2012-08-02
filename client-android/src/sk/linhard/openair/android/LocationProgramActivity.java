@@ -38,7 +38,6 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -58,7 +57,7 @@ import android.widget.TextView;
 /**
  * Shows the program at a location.
  * 
- * @author mlinhard
+ * @author Michal Linhard <michal@linhard.sk>
  * 
  */
 public class LocationProgramActivity extends Activity {
@@ -144,7 +143,6 @@ public class LocationProgramActivity extends Activity {
    private ListView listLocationProgram;
    private TextView locationTitle;
    private TextView debugClock;
-   private Handler mHandler = new Handler();
    private Location location;
    private DateTime nextDisplayChangeTime;
 
@@ -158,8 +156,9 @@ public class LocationProgramActivity extends Activity {
       locationTitle = (TextView) findViewById(R.id.textLocationTitle);
       locationTitle.setText(location.getName());
       debugClock = (TextView) LayoutInflater.from(this).inflate(R.layout.debug_clock, null);
+      debugClock.setVisibility(app.isShowDebugTime() ? View.VISIBLE : View.INVISIBLE);
       final WindowManager mWindowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
-      mHandler.post(new Runnable() {
+      debugClock.post(new Runnable() {
 
          public void run() {
             WindowManager.LayoutParams lp = new WindowManager.LayoutParams(LayoutParams.WRAP_CONTENT,
@@ -176,7 +175,7 @@ public class LocationProgramActivity extends Activity {
 
    public void updateDebugClock() {
       debugClock.setText(app.getShiftedTimeFormatted());
-      mHandler.postDelayed(updateDebugClock, 200);
+      debugClock.postDelayed(updateDebugClock, 200);
    }
 
    private DateTime computeNextDisplayChange(Location location, DateTime fromTime) {
@@ -210,6 +209,7 @@ public class LocationProgramActivity extends Activity {
       if (millisDelay <= 0) {
          updateListView();
       } else {
+         listLocationProgram.removeCallbacks(updateListView);
          listLocationProgram.postDelayed(updateListView, millisDelay);
       }
    }
@@ -225,6 +225,21 @@ public class LocationProgramActivity extends Activity {
    @Override
    protected void onResume() {
       super.onResume();
+      updateListView();
+      if (app.isShowDebugTime()) {
+         debugClock.setVisibility(View.VISIBLE);
+         updateDebugClock();
+      } else {
+         debugClock.removeCallbacks(updateDebugClock);
+         debugClock.setVisibility(View.INVISIBLE);
+      }
+   }
+   
+   @Override
+   protected void onPause() {
+      super.onPause();
+      debugClock.removeCallbacks(updateDebugClock);
+      listLocationProgram.removeCallbacks(updateListView);
    }
 
    @Override
@@ -246,6 +261,19 @@ public class LocationProgramActivity extends Activity {
       case R.id.itemDebugNextSwitch:
          app.setShiftedTime(nextDisplayChangeTime);
          updateListView();
+         break;
+      case R.id.itemToggleDebugTime:
+         if (app.isShowDebugTime()) {
+            app.setShowDebugTime(false);
+            item.setChecked(false);
+            debugClock.setVisibility(View.INVISIBLE);
+            debugClock.removeCallbacks(updateDebugClock);
+         } else {
+            app.setShowDebugTime(true);
+            item.setChecked(true);
+            debugClock.setVisibility(View.VISIBLE);
+            updateDebugClock();
+         }
          break;
       }
       return true;
@@ -282,8 +310,8 @@ public class LocationProgramActivity extends Activity {
                      } else {
                         app.setShiftedTime(shiftedTime);
                         Log.d(TAG, "Shifted time set to: " + app.getShiftedTimeFormatted());
-                        mHandler.removeCallbacks(updateListView);
-                        mHandler.post(updateListView);
+                        listLocationProgram.removeCallbacks(updateListView);
+                        listLocationProgram.post(updateListView);
                      }
                   }
                }).create();

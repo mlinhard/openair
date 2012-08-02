@@ -1,25 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="fill_parent"
     android:orientation="vertical" >
+
+    <LinearLayout
+        android:id="@+id/layoutEventDetailsButtons"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal"
+        android:weightSum="3" >
+
+        <Button
+            android:id="@+id/buSetAsActive"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:text="@string/textBuSetAsActive" />
+
+        <Button
+            android:id="@+id/buDelete"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:text="@string/textBuDelete" />
+
+        <Button
+            android:id="@+id/buUpdate"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:text="@string/textBuUpdate" />
+    </LinearLayout>
 
     <ScrollView
         android:id="@+id/scrollEventDetails"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="fill_parent"
+        android:layout_above="@+id/layoutEventDetailsButtons" >
 
-        <LinearLayout
+        <TextView
+            android:id="@+id/textEventDetails"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" >
-
-            <TextView
-                android:id="@+id/textEventDetails"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:text="TextView" />
-
-        </LinearLayout>
+            android:layout_height="wrap_content" >
+        </TextView>
     </ScrollView>
 
-</LinearLayout>
+</RelativeLayout>
